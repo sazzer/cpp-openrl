@@ -1,0 +1,8 @@
+#ifndef OPENRL_CONFIG_H
+#define OPENRL_CONFIG_H
+
+static const int VersionMajor = @OPENRL_VERSION_MAJOR@;
+static const int VersionMinor = @OPENRL_VERSION_MINOR@;
+static const int VersionMicro = @OPENRL_VERSION_MICRO@;
+
+#endif
