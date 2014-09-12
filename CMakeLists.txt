@@ -45,9 +45,6 @@ include(${CPM_DIR}/CPM.cmake)
 # Set up any library dependencies that we are going to need
 #------------------------------------------------------------------------------
 FIND_PACKAGE(cppcheck)
-CPM_AddModule("attest"
-    GIT_REPOSITORY "https://github.com/sazzer/attest"
-    GIT_TAG "v0.1")
 
 CPM_Finish()
 
@@ -58,6 +55,7 @@ CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/include/config.h.in" "${PROJECT_BINARY_DIR
 
 INCLUDE_DIRECTORIES("${PROJECT_BINARY_DIR}/include")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src")
+INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/deps/bandit")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}")
 
 ENABLE_TESTING()
