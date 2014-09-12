@@ -8,10 +8,7 @@ TARGET_LINK_LIBRARIES(openrl openrl_lib)
 
 STRING(REPLACE ";" " " TestsAsString "${Tests}")
 IF (NOT "${TestsAsString}" STREQUAL "")
-    ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
-
     ADD_EXECUTABLE(openrl_test ${Tests})
-    TARGET_LINK_LIBRARIES(openrl_test ${Boost_LIBRARIES})
 
     ENABLE_TESTING()
     ADD_TEST(OPENRL_OPENRL openrl_test)
