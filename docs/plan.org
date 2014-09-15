@@ -6,11 +6,14 @@
 *** Lakes
 *** Mountains
 *** Rivers
-*** Forests
+*** Biomes
 *** Other?
 ** World Feature Generation
+*** Empires/Colonizations/etc
 *** Cities
-*** Towns/Villages
+*** Towns/Villages/etc
 *** Roads
 *** Dungeons/Mines/etc
 *** Other?
+* Character Generation
+* Gameplay/Quest Generation
