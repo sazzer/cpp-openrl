@@ -1,0 +1,16 @@
+* World Generation
+** World Map Generation
+*** Contintents
+*** Oceans
+*** Coastlines
+*** Lakes
+*** Mountains
+*** Rivers
+*** Forests
+*** Other?
+** World Feature Generation
+*** Cities
+*** Towns/Villages
+*** Roads
+*** Dungeons/Mines/etc
+*** Other?
