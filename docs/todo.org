@@ -1,0 +1,5 @@
+* TODO World Generation
+** TODO Model for representing the generated world
+** TODO Interface for generating a world
+** TODO Program for generating a world and rendering it
+** TODO Continent generation
