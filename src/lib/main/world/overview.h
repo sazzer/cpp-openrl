@@ -2,6 +2,8 @@
 #define OPENGL_WORLD_OVERVIEW_H
 
 #include <vector>
+#include <cstdint>
+#include <cstddef>
 
 namespace World {
     /**
