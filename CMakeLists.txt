@@ -45,6 +45,8 @@ include(${CPM_DIR}/CPM.cmake)
 # Set up any library dependencies that we are going to need
 #------------------------------------------------------------------------------
 FIND_PACKAGE(cppcheck)
+FIND_PACKAGE(PkgConfig)
+PKG_CHECK_MODULES(LIBPNG libpng)
 
 CPM_Finish()
 
