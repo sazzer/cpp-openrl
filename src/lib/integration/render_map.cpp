@@ -3,24 +3,32 @@
 #include <png.h>
 #include <iostream>
 #include <memory>
+#include <easylogging++.h>
 
-void fileCloser(FILE* file) {
-        fclose(file);
-        std::cerr << "Closing file: " << file << std::endl;    
-}
+_INITIALIZE_EASYLOGGINGPP
 
-std::unique_ptr<FILE, void(*)(FILE*)> openFile(const std::string& filename, const std::string& mode) {
-    FILE* fp = fopen(filename.c_str(), mode.c_str());
-    std::cerr << "Opened file: " << fp << std::endl;
-    return std::unique_ptr<FILE, void(*)(FILE*)>(fp, fileCloser);
-}
+class File {
+public:
+    File(const std::string& filename, const std::string& mode) {
+        LOG(DEBUG) << "Opening file: " << filename;
+        fp = fopen(filename.c_str(), mode.c_str());
+        if (!fp) {
+            throw 1;
+        }
+        LOG(DEBUG) << "Opened file " << filename << " as " << fp;
+    }
+    ~File() {
+        LOG(DEBUG) << "Closing file: " << fp;
+    }
+    const FILE* file() const {
+        return fp;
+    }
+private:
+    FILE* fp;
+};
 
 void renderMapToFile(const World::Overview& map, const std::string& filename) {
-    auto fp = openFile(filename, "wb");
-    if (!fp) {
-        std::cerr << "Could not open file for writing: " << filename << std::endl;
-        return;
-    }
+    File file(filename, "wb");
 }
 
 /**
