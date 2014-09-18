@@ -1,5 +1,5 @@
-#ifndef OPENGL_WORLD_OVERVIEW_H
-#define OPENGL_WORLD_OVERVIEW_H
+#ifndef OPENRL_WORLD_OVERVIEW_H
+#define OPENRL_WORLD_OVERVIEW_H
 
 #include <vector>
 #include <cstdint>
@@ -91,4 +91,4 @@ namespace World {
     };    
 }
 
-#endif // OPENGL_WORLD_OVERVIEW_H
+#endif // OPENRL_WORLD_OVERVIEW_H
