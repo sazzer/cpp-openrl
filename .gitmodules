@@ -1,3 +1,6 @@
 [submodule "deps/bandit"]
 	path = deps/bandit
 	url = https://github.com/joakimkarlsson/bandit
+[submodule "deps/easyloggingpp"]
+	path = deps/easyloggingpp
+	url = https://github.com/easylogging/easyloggingpp.git
