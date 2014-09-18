@@ -59,38 +59,8 @@ namespace Png {
                 throw 1; // TODO: Fix
             }
             LOG(DEBUG) << "Created PNG Write Structure: " << png_;
-        }
-        /**
-         * Destroy the PNG Structure
-         */
-        ~PngWrite() {
-            if (png_) {
-                png_destroy_write_struct(&png_, (png_infopp)NULL);
-                LOG(DEBUG) << "Destroyed PNG Write Structure: " << png_;
-            }
-        }
-        /**
-         * Get the png_structp pointer
-         * @return the pointer
-         */
-        const png_structp& png() const {
-            return png_;
-        }
-    private:
-        /** The PNG pointer */
-        png_structp png_;
-    };
-    /**
-     * RAII Wrapper around a libpng png_infop object
-     */
-    class PngInfo {
-    public:
-        /**
-         * Create the PNG Info
-         * @param png The PNG Write Structure
-         */
-        PngInfo(const PngWrite& png) : png_(png) {
-            pngInfo_ = png_create_info_struct(png_.png());
+
+            pngInfo_ = png_create_info_struct(png_);
             if (pngInfo_ == NULL) {
                 LOG(ERROR) << "Failed to create PNG Info Structure";
                 throw 1; // TODO: Fix
@@ -98,31 +68,33 @@ namespace Png {
             LOG(DEBUG) << "Created PNG Info Structure: " << pngInfo_;
         }
         /**
-         * Destroy the PNG Info
+         * Destroy the PNG Structure
          */
-        ~PngInfo() {
+        ~PngWrite() {
             if (pngInfo_) {
-                png_free_data(png_.png(), pngInfo_, PNG_FREE_ALL, -1);
+                png_free_data(png_, pngInfo_, PNG_FREE_ALL, -1);
                 LOG(DEBUG) << "Destroyed PNG Info Structure";
+            }
+            if (png_) {
+                png_destroy_write_struct(&png_, (png_infopp)NULL);
+                LOG(DEBUG) << "Destroyed PNG Write Structure: " << png_;
             }
         }
     private:
-        /** The PNG Write Structure this is for */
-        const PngWrite& png_;
-        /** The PNG Info pointer */
+        /** The PNG pointer */
+        png_structp png_;
+        /** The Info Pointer */
         png_infop pngInfo_;
     };
     
     struct Png::Impl {
         std::unique_ptr<PngFile> pngFile;
         std::unique_ptr<PngWrite> pngWrite;
-        std::unique_ptr<PngInfo> pngInfo;
     };
     
     Png::Png(const std::string& filename) : pImpl(new Png::Impl) {
         pImpl->pngFile.reset(new PngFile(filename, "wb"));
         pImpl->pngWrite.reset(new PngWrite);
-        pImpl->pngInfo.reset(new PngInfo(*(pImpl->pngWrite)));
     }
     Png::~Png() {
         delete pImpl;
