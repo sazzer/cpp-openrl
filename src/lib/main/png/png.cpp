@@ -36,7 +36,7 @@ namespace Png {
          * Get the FILE pointer
          * @return the file pointer
          */
-        const FILE* file() const {
+        FILE* file() const {
             return file_;
         }
     private:
@@ -52,7 +52,7 @@ namespace Png {
         /**
          * Construct the PNG Structure
          */
-        PngWrite() {
+        PngWrite(PngFile& file) {
             png_ = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
             if (png_ == NULL) {
                 LOG(ERROR) << "Failed to create PNG Write Structure";
@@ -66,6 +66,8 @@ namespace Png {
                 throw 1; // TODO: Fix
             }
             LOG(DEBUG) << "Created PNG Info Structure: " << pngInfo_;
+
+            png_init_io(png_, file.file());
         }
         /**
          * Destroy the PNG Structure
@@ -76,9 +78,44 @@ namespace Png {
                 LOG(DEBUG) << "Destroyed PNG Info Structure";
             }
             if (png_) {
+                png_write_end(png_, NULL);
                 png_destroy_write_struct(&png_, (png_infopp)NULL);
                 LOG(DEBUG) << "Destroyed PNG Write Structure: " << png_;
             }
+        }
+
+        /**
+         * Set the metadata of the PNG
+         * @param data The metadata
+         */
+        void setData(const PngData& data) {
+            png_set_IHDR(png_,
+                         pngInfo_,
+                         data.width,
+                         data.height,
+                         data.bitDepth,
+                         PNG_COLOR_TYPE_RGB,
+                         PNG_INTERLACE_NONE,
+                         PNG_COMPRESSION_TYPE_BASE,
+                         PNG_FILTER_TYPE_BASE);
+            if (!data.title.empty()) {
+                png_text titleText;
+                titleText.compression = PNG_TEXT_COMPRESSION_NONE;
+                titleText.text = (png_charp)data.title.c_str();
+                titleText.key = (png_charp)"Title";
+                png_set_text(png_, pngInfo_, &titleText, 1);
+            }
+            png_write_info(png_, pngInfo_);
+        }
+        /**
+         * Write a row of pixels to the file
+         * @param row The row of pixels
+         */
+        void writeRow(const std::vector<RGB>& row) {
+            std::vector<png_byte> rowData;
+            rowData.resize(row.size() * 3);
+            png_write_row(png_, (png_bytep)(&(rowData[0])));
+            
         }
     private:
         /** The PNG pointer */
@@ -92,11 +129,19 @@ namespace Png {
         std::unique_ptr<PngWrite> pngWrite;
     };
     
-    Png::Png(const std::string& filename) : pImpl(new Png::Impl) {
+    Png::Png(const std::string& filename, const PngData& data) : pImpl(new Png::Impl) {
         pImpl->pngFile.reset(new PngFile(filename, "wb"));
-        pImpl->pngWrite.reset(new PngWrite);
+        pImpl->pngWrite.reset(new PngWrite(*(pImpl->pngFile)));
+        pImpl->pngWrite->setData(data);
     }
     Png::~Png() {
         delete pImpl;
+    }
+    /**
+     * Write a row of pixels to the file
+     * @param row The row of pixels
+     */
+    void Png::writeRow(const std::vector<RGB>& row) {
+        pImpl->pngWrite->writeRow(row);
     }
 }
