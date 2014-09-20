@@ -115,8 +115,13 @@ namespace Png {
          * @param row The row of pixels
          */
         void writeRow(const std::vector<RGB>& row) {
+            LOG(DEBUG) << "Writing a row of " << row.size() << " pixels";
             std::vector<png_byte> rowData;
-            rowData.resize(row.size() * 3);
+            for (const RGB& rgb : row) {
+                rowData.push_back(rgb.r);
+                rowData.push_back(rgb.g);
+                rowData.push_back(rgb.b);
+            }
             png_write_row(png_, (png_bytep)(&(rowData[0])));
             LOG(DEBUG) << "Written a row of PNG image data of size: " << rowData.size();
         }

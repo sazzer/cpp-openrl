@@ -19,11 +19,11 @@ int main(int argc, char** argv) {
     
     Png::Png png(argv[1], pngData);
     LOG(DEBUG) << "Starting rows";
-    for (uint16_t r = 0; r < pngData.height; ++r) {
-        LOG(DEBUG) << "Row: " << r;
+    for (uint16_t y = 0; y < pngData.height; ++y) {
+        LOG(DEBUG) << "Row: " << y;
         std::vector<Png::RGB> row;
-        for (uint16_t g = 0; g < pngData.width; ++g) {
-            row.push_back({(uint8_t)r, (uint8_t)g, 0});
+        for (uint16_t x = 0; x < pngData.width; ++x) {
+            row.push_back({(uint8_t)y, (uint8_t)x, 0});
         }
         png.writeRow(row);
     }
