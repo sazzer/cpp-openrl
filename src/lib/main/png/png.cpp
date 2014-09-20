@@ -89,6 +89,7 @@ namespace Png {
          * @param data The metadata
          */
         void setData(const PngData& data) {
+            LOG(DEBUG) << "Setting the PNG data";
             png_set_IHDR(png_,
                          pngInfo_,
                          data.width,
@@ -99,6 +100,7 @@ namespace Png {
                          PNG_COMPRESSION_TYPE_BASE,
                          PNG_FILTER_TYPE_BASE);
             if (!data.title.empty()) {
+                LOG(DEBUG) << "Setting the PNG title to: " << data.title;
                 png_text titleText;
                 titleText.compression = PNG_TEXT_COMPRESSION_NONE;
                 titleText.text = (png_charp)data.title.c_str();
@@ -106,6 +108,7 @@ namespace Png {
                 png_set_text(png_, pngInfo_, &titleText, 1);
             }
             png_write_info(png_, pngInfo_);
+            LOG(DEBUG) << "Written the PNG Info";
         }
         /**
          * Write a row of pixels to the file
@@ -115,7 +118,7 @@ namespace Png {
             std::vector<png_byte> rowData;
             rowData.resize(row.size() * 3);
             png_write_row(png_, (png_bytep)(&(rowData[0])));
-            
+            LOG(DEBUG) << "Written a row of PNG image data of size: " << rowData.size();
         }
     private:
         /** The PNG pointer */

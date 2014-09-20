@@ -6,18 +6,21 @@ _INITIALIZE_EASYLOGGINGPP
 
 void renderMapToFile(const World::Overview& map, const std::string& filename) {
     Png::PngData pngData;
-    pngData.width = 256;
-    pngData.height = 256;
+    pngData.width = 50;
+    pngData.height = 50;
     pngData.title = "Colours";
     
     Png::Png png(filename, pngData);
-    for (uint16_t r = 0; r < 256; ++r) {
+    LOG(DEBUG) << "Starting rows";
+    for (uint16_t r = 0; r < pngData.height; ++r) {
+        LOG(DEBUG) << "Row: " << r;
         std::vector<Png::RGB> row;
-        for (uint16_t g = 0; r < 256; ++r) {
+        for (uint16_t g = 0; g < pngData.width; ++g) {
             row.push_back({(uint8_t)r, (uint8_t)g, 0});
         }
         png.writeRow(row);
     }
+    LOG(DEBUG) << "Finished rows";
 }
 
 /**
