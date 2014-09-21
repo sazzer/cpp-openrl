@@ -15,8 +15,46 @@ namespace World {
         LOG(TRACE) << "Speckling the map";
         std::uniform_real_distribution<double> distribution(0.0, 1.0);
         for (size_t i = 0; i < landTiles.size(); ++i) {
-            landTiles[i] = (rng_.generate<double>(distribution) > 0.7);
+            landTiles[i] = (rng_.generate<double>(distribution) > 0.4);
         }
+
+        // Run the actual CA process, changing every tile to land if 5/9s of the 3x3 area are land
+        // And changing the tile to water otherwise
+        for (uint16_t i = 0; i < 5; ++i) {
+            LOG(TRACE) << "Running CA process: " << i;
+            std::vector<bool> nextLandTiles = landTiles;
+            for (uint16_t y = 0; y < overview.height(); ++y) {
+                for (uint16_t x = 0; x < overview.width(); ++x) {
+                    int landCount = 0;
+                    for (int slx = -2; slx <= 2; ++slx) {
+                        for (int sly = -2; sly <= 2; ++sly) {
+                            bool isLand;
+                            if (slx + x <= 0) {
+                                isLand = false;
+                            } else if (sly + y <= 0) {
+                                isLand = false;
+                            } else if (slx + x >= overview.width()) {
+                                isLand = false;
+                            } else if (sly + y >= overview.height()) {
+                                isLand = false;
+                            } else {
+                                auto landTilesOffset = overview.tileIndex(slx + x, sly + y);
+                                isLand = landTiles[landTilesOffset];
+                            }
+                            if (isLand) {
+                                ++landCount;
+                            }
+                        }
+                    }
+                
+                    auto landTilesOffset = overview.tileIndex(x, y);
+                    bool isNewLand = landCount >= 15;
+                    nextLandTiles[landTilesOffset] = isNewLand;
+                }
+            }
+            std::swap(landTiles, nextLandTiles);
+        }
+
 
         // Finally, set the actual tiles as appropriate
         LOG(TRACE) << "Generating land tiles";

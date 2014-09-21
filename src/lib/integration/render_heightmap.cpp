@@ -16,7 +16,11 @@ void renderMapToFile(const World::Overview& map, const std::string& filename) {
         std::vector<Png::RGB> row;
         for (uint16_t x = 0; x < pngData.width; ++x) {
             auto height = map.at(x, y).height();
-            row.push_back({height, height, height});
+            if (height > 0) {
+                row.push_back({0, 100, 0});
+            } else {
+                row.push_back({0, 0, 100});                
+            }
         }
         png.writeRow(row);
     }
@@ -34,6 +38,6 @@ int main(int argc, char** argv) {
     
     Rng rng;
     World::MapGenerator mapGenerator(rng);
-    World::Overview overviewMap = mapGenerator.generateMap(4000, 4000);
+    World::Overview overviewMap = mapGenerator.generateMap(400, 400);
     renderMapToFile(overviewMap, argv[1]);
 }
