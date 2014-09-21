@@ -38,6 +38,6 @@ int main(int argc, char** argv) {
     
     Rng rng;
     World::MapGenerator mapGenerator(rng);
-    World::Overview overviewMap = mapGenerator.generateMap(400, 400);
+    World::Overview overviewMap = mapGenerator.generateMap(4000, 4000);
     renderMapToFile(overviewMap, argv[1]);
 }

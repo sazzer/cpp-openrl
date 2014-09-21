@@ -6,56 +6,55 @@ namespace World {
         
     }
     
+    struct Seed {
+        uint16_t x;
+        uint16_t y;
+        uint16_t radius;
+    };
+
     void MapGenerator::generateContinents(Overview& overview) {
         LOG(DEBUG) << "Generating continents";
         std::vector<bool> landTiles;
         landTiles.resize(overview.width() * overview.height());
+
+        // The number of cells on the map is w*h
+        // We want to achieve ~50% of this as land
+        // We therefore want to calculate a number of seeds and an average radius to achieve this
+        // This means that (numberOfSeeds * 3.14 * averageRadius * averageRadius) / (w*h) ~= 0.5
+        // We need to fix either numberOfSeeds or averageRadius, and then calculate the other one.
+        // Options for this are:
         
-        // First step - randomly speckle the entire map
-        LOG(TRACE) << "Speckling the map";
-        std::uniform_real_distribution<double> distribution(0.0, 1.0);
-        for (size_t i = 0; i < landTiles.size(); ++i) {
-            landTiles[i] = (rng_.generate<double>(distribution) > 0.4);
-        }
+        // w and h are fixed. averageRadius can be just a random number. This means that we can
+        // calculate numberOfSeeds from this.
+        // The average radius is therefore going to be 5% of the width +- 10%;
+        // The number of seeds is therefore:
+        //// 0.5 * w * h = numberOfSeeds * 3.14 * averageRadius * averageRadius
+        //// (0.5 * w * h) / (3.14 * averageRadius * averageRadius) = numberOfSeeds
+        // For example: w = 4000, h = 4000, averageRadius = 200
+        //// (0.5 * 4000 * 4000) / (3.14 * 200 * 200) = numberOfSeeds
+        //// (8000000 / 125600) = numberOfSeeds
+        //// 64 = numberOfSeeds
+        // This gives a smaller number of larger seeds
+        
+        // w and h are fixed. numberOfSeeds can be just a random number. This means that we can
+        // calculate averageRadius from this.
+        // The number of seeds is therefore going to be 10% of the width +- 10%.
+        // The average radius is therefore:
+        //// 0.5 * w * h = numberOfSeeds * 3.14 * averageRadius * averageRadius
+        //// (0.5 * w * h) / (numberOfSeeds * 3.14) = averageRadius ^ 2
+        //// sqrt((0.5 * w * h) / (numberOfSeeds * 3.14)) = averageRadius
+        // For example: w = 4000, h = 4000, numberOfSeeds = 400
+        //// sqrt((0.5 * 4000 * 4000) / (400 * 3.14)) = averageRadius = 79
+        // This gives a larger number of small seeds
 
-        // Run the actual CA process, changing every tile to land if 5/9s of the 3x3 area are land
-        // And changing the tile to water otherwise
-        for (uint16_t i = 0; i < 5; ++i) {
-            LOG(TRACE) << "Running CA process: " << i;
-            std::vector<bool> nextLandTiles = landTiles;
-            for (uint16_t y = 0; y < overview.height(); ++y) {
-                for (uint16_t x = 0; x < overview.width(); ++x) {
-                    int landCount = 0;
-                    for (int slx = -2; slx <= 2; ++slx) {
-                        for (int sly = -2; sly <= 2; ++sly) {
-                            bool isLand;
-                            if (slx + x <= 0) {
-                                isLand = false;
-                            } else if (sly + y <= 0) {
-                                isLand = false;
-                            } else if (slx + x >= overview.width()) {
-                                isLand = false;
-                            } else if (sly + y >= overview.height()) {
-                                isLand = false;
-                            } else {
-                                auto landTilesOffset = overview.tileIndex(slx + x, sly + y);
-                                isLand = landTiles[landTilesOffset];
-                            }
-                            if (isLand) {
-                                ++landCount;
-                            }
-                        }
-                    }
-                
-                    auto landTilesOffset = overview.tileIndex(x, y);
-                    bool isNewLand = landCount >= 15;
-                    nextLandTiles[landTilesOffset] = isNewLand;
-                }
-            }
-            std::swap(landTiles, nextLandTiles);
-        }
-
-
+        double landPercentage = 0.5;
+        uint16_t numberOfSeeds = (overview.width() / 10);
+        uint16_t averageRadius = sqrt((landPercentage * overview.width() * overview.height()) / (numberOfSeeds * 3.14));
+        LOG(DEBUG) << "Land Percentage: " << landPercentage;
+        LOG(DEBUG) << "Number of seeds: " << numberOfSeeds;
+        LOG(DEBUG) << "Average Radius: " << averageRadius;
+        LOG(DEBUG) << "Average seed percentage: " << (numberOfSeeds * 3.14 * averageRadius * averageRadius) / (overview.width() * overview.height());
+        
         // Finally, set the actual tiles as appropriate
         LOG(TRACE) << "Generating land tiles";
         for (uint16_t x = 0; x < overview.height(); ++x) {
