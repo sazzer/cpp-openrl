@@ -1,6 +1,6 @@
 #include "png/png.h"
 #include <easylogging++.h>
-#include "world/overview.h"
+#include "world/map_generator.h"
 
 _INITIALIZE_EASYLOGGINGPP
 
@@ -32,6 +32,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     
-    World::Overview overviewMap(4000, 4000);
+    World::MapGenerator mapGenerator;
+    World::Overview overviewMap = mapGenerator.generateMap(4000, 4000);
     renderMapToFile(overviewMap, argv[1]);
 }
