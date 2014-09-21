@@ -32,7 +32,8 @@ int main(int argc, char** argv) {
         return 1;
     }
     
-    World::MapGenerator mapGenerator;
+    Rng rng;
+    World::MapGenerator mapGenerator(rng);
     World::Overview overviewMap = mapGenerator.generateMap(4000, 4000);
     renderMapToFile(overviewMap, argv[1]);
 }

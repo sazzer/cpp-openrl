@@ -88,6 +88,8 @@ namespace World {
         const uint16_t height_;
         /** The actual tiles that make up the world */
         std::vector<OverviewTile> tiles_;
+
+        friend class MapGenerator;
     };    
 }
 
