@@ -47,7 +47,7 @@ namespace World {
         //// sqrt((0.5 * 4000 * 4000) / (400 * 3.14)) = averageRadius = 79
         // This gives a larger number of small seeds
 
-        double landPercentage = 0.5;
+        double landPercentage = 0.7;
         uint16_t numberOfSeeds = (overview.width() / 10);
         uint16_t averageRadius = sqrt((landPercentage * overview.width() * overview.height()) / (numberOfSeeds * 3.14));
 
@@ -56,16 +56,43 @@ namespace World {
         LOG(DEBUG) << "Average Radius: " << averageRadius;
 
         uint16_t numberOfSeedsSD = numberOfSeeds / 20;
-        uint16_t averageRadiusSD = averageRadius / 20;
         numberOfSeeds = rng_.generate<double>(std::normal_distribution<double>(numberOfSeeds, numberOfSeedsSD));
-        averageRadius = rng_.generate<double>(std::normal_distribution<double>(averageRadius, averageRadiusSD));
         LOG(DEBUG) << "Number of seeds SD: " << numberOfSeedsSD;
-        LOG(DEBUG) << "Average Radius SD: " << averageRadiusSD;
         LOG(DEBUG) << "Adjusted Number of seeds: " << numberOfSeeds;
-        LOG(DEBUG) << "Adjusted Average Radius: " << averageRadius;
 
         LOG(DEBUG) << "Average seed percentage: " << (numberOfSeeds * 3.14 * averageRadius * averageRadius) / (overview.width() * overview.height());
         
+        // Next we generate the seeds themselves
+        std::vector<Seed> seeds;
+        uint16_t averageRadiusDifference = averageRadius / 10;
+        uint16_t minRadius = averageRadius - averageRadiusDifference;
+        uint16_t maxRadius = averageRadius + averageRadiusDifference;
+        // We do this so that we guarantee that the generated seeds don't touch the edge of the map
+        std::uniform_int_distribution<uint16_t> xDistribution(maxRadius + 1, overview.width() - (maxRadius + 1));
+        std::uniform_int_distribution<uint16_t> yDistribution(maxRadius + 1, overview.height() - (maxRadius + 1));
+        std::uniform_int_distribution<uint16_t> radiusDistribution(minRadius, maxRadius);
+        for (uint16_t s = 0; s < numberOfSeeds; ++s) {
+            Seed seed{rng_.generate<uint16_t>(xDistribution), 
+                rng_.generate<uint16_t>(yDistribution),
+                rng_.generate<uint16_t>(radiusDistribution)};
+            seeds.push_back(seed);
+            LOG(DEBUG) << "Seed " << s << ": (" << seed.x << ", " << seed.y << ") = " << seed.radius;
+        }
+
+        // Next we actually draw the seeds on our grid of land tiles
+        for (Seed seed : seeds) {
+            uint16_t xMin = seed.x - seed.radius;
+            uint16_t yMin = seed.y - seed.radius;
+            uint16_t xMax = seed.x + seed.radius;
+            uint16_t yMax = seed.y + seed.radius;
+            for (uint16_t x = xMin; x <= xMax; ++x) {
+                for (uint16_t y = yMin; y <= yMax; ++y) {
+                    auto landTilesOffset = overview.tileIndex(x, y);
+                    landTiles[landTilesOffset] = true;
+                }
+            }
+        }
+
         // Finally, set the actual tiles as appropriate
         LOG(TRACE) << "Generating land tiles";
         for (uint16_t x = 0; x < overview.height(); ++x) {
