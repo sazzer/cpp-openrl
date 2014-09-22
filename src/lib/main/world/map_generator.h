@@ -1,5 +1,5 @@
 #ifndef OPENRL_WORLD_MAP_GENERATOR_H
-#define OPENRL_WORRD_MAP_GENERATOR_H
+#define OPENRL_WORLD_MAP_GENERATOR_H
 
 #include "world/overview.h"
 #include "rng.h"
