@@ -50,9 +50,20 @@ namespace World {
         double landPercentage = 0.5;
         uint16_t numberOfSeeds = (overview.width() / 10);
         uint16_t averageRadius = sqrt((landPercentage * overview.width() * overview.height()) / (numberOfSeeds * 3.14));
+
         LOG(DEBUG) << "Land Percentage: " << landPercentage;
         LOG(DEBUG) << "Number of seeds: " << numberOfSeeds;
         LOG(DEBUG) << "Average Radius: " << averageRadius;
+
+        uint16_t numberOfSeedsSD = numberOfSeeds / 20;
+        uint16_t averageRadiusSD = averageRadius / 20;
+        numberOfSeeds = rng_.generate<double>(std::normal_distribution<double>(numberOfSeeds, numberOfSeedsSD));
+        averageRadius = rng_.generate<double>(std::normal_distribution<double>(averageRadius, averageRadiusSD));
+        LOG(DEBUG) << "Number of seeds SD: " << numberOfSeedsSD;
+        LOG(DEBUG) << "Average Radius SD: " << averageRadiusSD;
+        LOG(DEBUG) << "Adjusted Number of seeds: " << numberOfSeeds;
+        LOG(DEBUG) << "Adjusted Average Radius: " << averageRadius;
+
         LOG(DEBUG) << "Average seed percentage: " << (numberOfSeeds * 3.14 * averageRadius * averageRadius) / (overview.width() * overview.height());
         
         // Finally, set the actual tiles as appropriate

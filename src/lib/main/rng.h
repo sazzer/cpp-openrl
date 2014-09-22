@@ -23,7 +23,7 @@ public:
      * @return the generated number
      */
     template <typename T, typename D>
-    T generate(D& distribution) {
+    T generate(D distribution) {
         return distribution(generator);
     }
 private:
