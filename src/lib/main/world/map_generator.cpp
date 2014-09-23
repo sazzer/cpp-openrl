@@ -48,7 +48,7 @@ namespace World {
         // This gives a larger number of small seeds
 
         double landPercentage = 0.7;
-        uint16_t numberOfSeeds = (overview.width() / 10);
+        uint16_t numberOfSeeds = (overview.width() / 40);
         uint16_t averageRadius = sqrt((landPercentage * overview.width() * overview.height()) / (numberOfSeeds * 3.14));
 
         LOG(DEBUG) << "Land Percentage: " << landPercentage;
